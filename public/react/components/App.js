@@ -1,3 +1,5 @@
+//This was coded by Paul, it is very broken and does not work
+
 import React, { useState, useEffect } from 'react';
 import { PagesList } from './PagesList';
 
@@ -6,7 +8,7 @@ import apiURL from '../api';
 
 export const App = () => {
   const [pages, setPages] = useState([]);
-  const [selectedPage, setSelectedPage] = useState(null); // New state variable
+  const [selectedPage, setSelectedPage] = useState(null);
 
   async function fetchPages() {
     try {
@@ -18,17 +20,17 @@ export const App = () => {
     }
   }
 
-  const SinglePageView = ({ page, tags, onBack }) => {
-	return (
-	  <div>
-		<h3>{page.title}</h3>
-		<p>Author: {page.authorId}</p>
-		<p>Content: {page.content}</p>
-		<p>Tags: {page.status}</p>
-		<p>Date: {page.createdAt}</p>
-		<button onClick={onBack}>Back to Wiki List</button>
-	  </div>
-	);
+  const SinglePageView = ({ page, goBack }) => {
+    return (
+      <div>
+        <h3>{page.title}</h3>
+        <h3>Author: {page.authorId.name}</h3>
+        <h3>Tags: {page.id.name}</h3>
+        <h3>Date created: {page.createdAt}</h3>
+        <p>Content: {page.content}</p>
+        <button onClick={goBack}>Back to Wiki List</button>
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -39,10 +41,8 @@ export const App = () => {
     <main>
       <h1>WikiVerse</h1>
       {selectedPage ? (
-        // Render the single page view
-        <SinglePageView page={selectedPage} onBack={() => setSelectedPage(null)} />
+        <SinglePageView page={selectedPage} goBack={() => setSelectedPage(null)} />
       ) : (
-        // Render the list of pages
         <>
           <h2>An interesting 📚</h2>
           <PagesList pages={pages} onSelectPage={setSelectedPage} />
