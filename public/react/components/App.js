@@ -5,28 +5,49 @@ import { PagesList } from './PagesList';
 import apiURL from '../api';
 
 export const App = () => {
+  const [pages, setPages] = useState([]);
+  const [selectedPage, setSelectedPage] = useState(null); // New state variable
 
-	const [pages, setPages] = useState([]);
+  async function fetchPages() {
+    try {
+      const response = await fetch(`${apiURL}/wiki`);
+      const pagesData = await response.json();
+      setPages(pagesData);
+    } catch (err) {
+      console.log("Oh no an error! ", err);
+    }
+  }
 
-	async function fetchPages(){
-		try {
-			const response = await fetch(`${apiURL}/wiki`);
-			const pagesData = await response.json();
-			setPages(pagesData);
-		} catch (err) {
-			console.log("Oh no an error! ", err)
-		}
-	}
-
-	useEffect(() => {
-		fetchPages();
-	}, []);
-
+  const SinglePageView = ({ page, tags, onBack }) => {
 	return (
-		<main>	
+	  <div>
+		<h3>{page.title}</h3>
+		<p>Author: {page.authorId}</p>
+		<p>Content: {page.content}</p>
+		<p>Tags: {page.status}</p>
+		<p>Date: {page.createdAt}</p>
+		<button onClick={onBack}>Back to Wiki List</button>
+	  </div>
+	);
+  };
+
+  useEffect(() => {
+    fetchPages();
+  }, []);
+
+  return (
+    <main>
       <h1>WikiVerse</h1>
-			<h2>An interesting 📚</h2>
-			<PagesList pages={pages} />
-		</main>
-	)
-}
+      {selectedPage ? (
+        // Render the single page view
+        <SinglePageView page={selectedPage} onBack={() => setSelectedPage(null)} />
+      ) : (
+        // Render the list of pages
+        <>
+          <h2>An interesting 📚</h2>
+          <PagesList pages={pages} onSelectPage={setSelectedPage} />
+        </>
+      )}
+    </main>
+  );
+};
